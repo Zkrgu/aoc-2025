@@ -14,33 +14,16 @@ for (const line of lines) {
     const dir = line[0] == 'L' ? -1 : 1;
     const thisNum = +line.slice(1)
 
-    let oldNum = num;
-    num += thisNum * (dir)
-    // if (num >= max || num < 0) ++part2;
-    // if (thisNum > 99) part2 += Math.floor(thisNum / 100) - 1;
-    // console.log(((num % max) + max) % max)
-    // num = ((num % max) + max) % max
-    let first = true;
-    while (num >= max || num < 0) {
-        if (first && oldNum == 0 && num <= 0) {
-            --part2;
-        }
-        first = false;
-        if (num == max) {
-            num = 0
-            break;
-        }
-        ++part2;
-        // console.log(num)
-        if (num >= max) num -= max;
-        else num += max;
-    }
-    if (num == 0) {
-        ++part1;
-        ++part2
-    }
-    console.log(num)
+    const oldNum = num;
+    num = num + (thisNum % 100) * dir;
+
+    if (thisNum > 99) part2 += Math.floor(thisNum / 100)
+    if (oldNum != 0 && num < 0 || num > max) ++part2;
+
+    num = ((num % max) + max) % max
+    if (num == 0) ++part1
 }
+part2 += part1
 
 console.log(part1);
 console.log(part2);
