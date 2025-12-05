@@ -8,14 +8,10 @@ const ranges = first.map(e => e.split('-').map(f => +f)).sort(([a], [b]) => a - 
 
 const fresh = [];
 
-for (let [i, [start, end]] of ranges.entries()) {
-    if (fresh.at(-1)?.[1] >= end) continue;
-    for (let j = i; j < ranges.length; ++j) {
-        if (ranges[j][0] <= end) {
-            end = Math.max(end, ranges[j][1])
-        }
-    }
-    fresh.push([start, end])
+for (let [start, end] of ranges) {
+    const lastEnd = fresh.at(-1)?.[1]
+    if (lastEnd >= start) fresh.at(-1)[1] = Math.max(end, lastEnd);
+    else fresh.push([start, end])
 }
 
 let part1 = 0;
