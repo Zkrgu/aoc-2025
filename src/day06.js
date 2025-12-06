@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-const input = readFileSync(process.stdin.fd, "utf-8").trim();
+const input = readFileSync(process.stdin.fd, "utf-8").slice(0, -1);
 
 const lines = input.split('\n')
 
@@ -27,41 +27,30 @@ for (const expr of math) {
 
 console.log(part1);
 
-const indices = lines.at(-1).split('').map((e, i) => e != " " ? i : null).filter((e) => e != null)
-
-const cols = new Array(indices.length).fill(0).map(e => []);
-
-for (const row of lines) {
-    let lastIndex = 0;
-    for (const [i, index] of indices.slice(1).entries()) {
-        cols[i].push(row.slice(lastIndex, index - 1))
-        lastIndex = index;
-    }
-    cols[cols.length - 1].push(row.slice(lastIndex))
-}
-
 let part2 = 0;
-
-for (const expr of cols) {
-    if (expr.length == 0) continue
-    const withoutOp = expr.slice(0, -1)
-    const method = expr.at(-1).trim()
-    const nums = [];
-    for (let i = 0; i < expr[0].length; ++i) {
-        let num = ""
-        for (const row of withoutOp) {
-            num += row[i]
+let method;
+let psum = 0;
+let buf;
+for (let x = 0; x < lines[0].length; ++x) {
+    buf = "";
+    for (let y = 0; y < lines.length; ++y) {
+        const char = lines[y][x];
+        if (char == "*" || char == "+") {
+            method = char;
+        } else if (char != " " && char != undefined) {
+            buf += char;
         }
-        nums.push(+num)
     }
-    let score = 0;
-    if (method == "+") {
-        score = nums.reduce((p, c) => p - -c)
+    if (buf.trim() == "") {
+        part2 += psum;
+        psum = 0;
     }
-    if (method == "*") {
-        score = nums.reduce((p, c) => p * c)
+    else if (method == "+") psum += +buf;
+    else if (method == "*") {
+        if (psum == 0) psum = 1;
+        psum *= +buf;
     }
-    part2 += score
 }
+part2 += psum
 
 console.log(part2)
