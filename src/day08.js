@@ -18,6 +18,7 @@ for (let a = 0; a < junctions.length - 1; ++a) {
 distance.sort(([a], [b]) => a - b);
 
 const link = junctions.map((_, i) => i)
+const size = new Array(link.length).fill(1);
 function find(x) {
     if (x == link[x]) {
         return x;
@@ -26,18 +27,21 @@ function find(x) {
     return link[x];
 }
 function unite(x, y) {
-    link[x] = find(y);
+    x = find(x);
+    y = find(y);
+    if (size[x] < size[y]) {
+        const tmp = x;
+        x = y;
+        y = tmp;
+    }
+    size[x] += size[y];
+    link[y] = x;
 }
 
 let connections = 0;
 for (const [i, [dist, jA, jB]] of distance.entries()) {
     if (i === 1000) {
-        const size = new Map();
-        for (let k = 0; k < junctions.length; ++k) {
-            const key = find(k)
-            size.set(key, (size.get(key) ?? 0) + 1)
-        }
-        console.log([...size.values()].sort((a, b) => b - a).slice(0, 3).reduce((p, c) => p * c, 1))
+        console.log(size.toSorted((a, b) => b - a).slice(0, 3).reduce((p, c) => p * c, 1))
     }
     if (find(jA) != find(jB)) {
         connections += 1;
