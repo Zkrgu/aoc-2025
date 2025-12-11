@@ -14,27 +14,33 @@ for (const line of lines) {
 }
 
 const DP = new Map();
-function dfs(node, end, fft = false, dac = false) {
+function dfs(node, end) {
     if (node == end) {
-        return fft && dac;
+        return 1;
     }
-    const key = toKey(node, fft, dac);
+    const key = toKey(node, end)
     if (DP.has(key)) return DP.get(key);
-    const neighs = adjacent.get(node);
+    const neighs = adjacent.get(node) ?? [];
 
     let sum = 0;
     for (const neigh of neighs) {
-        sum += dfs(neigh, end, fft || node == "fft", dac || node == "dac");
+        sum += dfs(neigh, end);
     }
 
     DP.set(key, sum);
     return sum;
 }
 
-
 function toKey(...a) {
-    return a.join(',');
+    return a.join(',')
 }
 
 console.log(dfs("you", "out", true, true));
-console.log(dfs("svr", "out"));
+const svrToFft = dfs("svr", "fft");
+const fftToDac = dfs("fft", "dac");
+const dacToOut = dfs("dac", "out");
+const svrToDac = dfs("svr", "dac");
+const dacToFft = dfs("dac", "fft");
+const fftToOut = dfs("fft", "out");
+
+console.log(svrToFft * fftToDac * dacToOut + svrToDac * dacToFft * fftToOut);
